@@ -253,3 +253,38 @@ def evaluate(flag, model, data_provider, criterion):
         plt.savefig('test.pdf')
         
     return np.average(total_loss)                      
+
+# parameter
+d_input = 1
+d_output = 1
+d_model = 512
+nhead = 8
+dim_feedforward = 2048
+num_encoder_layers = 1
+num_decoder_layers = 1
+dropout = 0.01
+src_len = 36
+tgt_len = 12
+batch_size = 1
+epochs = 30
+best_loss = float('Inf')
+best_model = None
+
+model = Transformer(num_encoder_layers=num_encoder_layers,
+                    num_decoder_layers=num_decoder_layers,
+                    d_model=d_model,
+                    d_input=d_input, 
+                    d_output=d_output,
+                    dim_feedforward=dim_feedforward,
+                    dropout=dropout, nhead=nhead
+                   )
+
+for p in model.parameters():
+    if p.dim() > 1:
+        nn.init.xavier_uniform_(p)
+
+model = model.to(device)
+
+criterion = torch.nn.MSELoss()
+
+optimizer = torch.optim.RAdam(model.parameters(), lr=0.0001)                      
