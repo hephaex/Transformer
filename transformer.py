@@ -96,3 +96,12 @@ class PositionalEncoding(nn.Module):
         x = x + self.pe[:, :x.size(1)]
         return self.dropout(x)
 
+#
+class TokenEmbedding(nn.Module):
+    def __init__(self, c_in, d_model):
+        super(TokenEmbedding, self).__init__()
+        self.tokenConv = nn.Linear(c_in, d_model) 
+
+    def forward(self, x):
+        x = self.tokenConv(x)
+        return x
