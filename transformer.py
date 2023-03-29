@@ -288,3 +288,27 @@ model = model.to(device)
 criterion = torch.nn.MSELoss()
 
 optimizer = torch.optim.RAdam(model.parameters(), lr=0.0001)                      
+
+valid_losses = []
+for epoch in range(1, epochs + 1):
+    
+    loss_train = train(
+        model=model, data_provider=data_provider('train', src_len, tgt_len, batch_size), optimizer=optimizer,
+        criterion=criterion
+    )
+        
+    loss_valid = evaluate(
+        flag='val', model=model, data_provider=data_provider('val', src_len, tgt_len, batch_size), criterion=criterion
+    )
+    
+    if epoch%10==0:
+        print('[{}/{}] train loss: {:.2f}, valid loss: {:.2f}'.format(
+            epoch, epochs,
+            loss_train, loss_valid,
+        ))
+        
+    valid_losses.append(loss_valid)
+    
+    if best_loss > loss_valid:
+        best_loss = loss_valid
+        best_model = model                      
