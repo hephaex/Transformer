@@ -214,3 +214,42 @@ def train(model, data_provider, optimizer, criterion):
         optimizer.step()
         
     return np.average(total_loss)
+
+#
+def evaluate(flag, model, data_provider, criterion):
+    model.eval()
+    total_loss = []
+    for src, tgt in data_provider:
+        
+        src = src.float().to(device)
+        tgt = tgt.float().to(device)
+
+        seq_len_src = src.shape[1]
+        mask_src = (torch.zeros(seq_len_src, seq_len_src)).type(torch.bool)
+        mask_src = mask_src.float().to(device)
+    
+        memory = model.encode(src, mask_src)
+        outputs = src[:, -1:, :]
+        seq_len_tgt = tgt.shape[1]
+    
+        for i in range(seq_len_tgt - 1):
+        
+            mask_tgt = (generate_square_subsequent_mask(outputs.size(1))).to(device)
+        
+            output = model.decode(outputs, memory, mask_tgt)
+            output = model.output(output)
+
+            outputs = torch.cat([outputs, output[:, -1:, :]], dim=1)
+        
+        loss = criterion(outputs, tgt)
+        total_loss.append(loss.cpu().detach())
+        
+    if flag=='test':
+        true = torch.cat((src, tgt), dim=1)
+        pred = torch.cat((src, output), dim=1)
+        plt.plot(true.squeeze().cpu().detach().numpy(), label='true')
+        plt.plot(pred.squeeze().cpu().detach().numpy(), label='pred')
+        plt.legend()
+        plt.savefig('test.pdf')
+        
+    return np.average(total_loss)                      
