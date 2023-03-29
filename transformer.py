@@ -312,3 +312,6 @@ for epoch in range(1, epochs + 1):
     if best_loss > loss_valid:
         best_loss = loss_valid
         best_model = model                      
+
+#
+evaluate(flag='test', model=best_model, data_provider=data_provider('test', src_len, tgt_len, batch_size), criterion=criterion)                      
