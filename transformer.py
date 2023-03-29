@@ -187,3 +187,5 @@ def create_mask(src, tgt):
 def generate_square_subsequent_mask(seq_len):
     mask = torch.triu(torch.full((seq_len, seq_len), float('-inf')), diagonal=1)
     return mask                      
+
+#                       
