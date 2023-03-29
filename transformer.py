@@ -62,3 +62,16 @@ class Dataset(Dataset):
     
     def __len__(self):
         return len(self.data) - self.seq_len - self.pred_len + 1
+def data_provider(flag, seq_len, pred_len, batch_size):
+    #flag
+    data_set = Dataset(flag=flag, 
+                       seq_len=seq_len, 
+                       pred_len=pred_len
+                       )
+    #Data loader
+    data_loader = DataLoader(data_set,
+                             batch_size=batch_size, 
+                             shuffle=True
+                            )
+    
+    return data_loader
