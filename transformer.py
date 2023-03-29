@@ -189,3 +189,28 @@ def generate_square_subsequent_mask(seq_len):
     return mask                      
 
 #                       
+def train(model, data_provider, optimizer, criterion):
+    model.train()
+    total_loss = []
+    for src, tgt in data_provider:
+        
+        src = src.float().to(device)
+        tgt = tgt.float().to(device)
+
+        input_tgt = torch.cat((src[:,-1:,:],tgt[:,:-1,:]), dim=1)
+
+        mask_src, mask_tgt = create_mask(src, input_tgt)
+
+        output = model(
+            src=src, tgt=input_tgt, 
+            mask_src=mask_src, mask_tgt=mask_tgt
+        )
+
+        optimizer.zero_grad()
+
+        loss = criterion(output, tgt)
+        loss.backward()
+        total_loss.append(loss.cpu().detach())
+        optimizer.step()
+        
+    return np.average(total_loss)
