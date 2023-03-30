@@ -19,6 +19,21 @@ torch.manual_seed(fix_seed)
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu'                      
 
+#
+from pandas_datareader import data as wb
+import yfinance as yfin
+yfin.pdr_override()
+
+## Security code
+stock_code='9984.T'
+## Start Date
+start_date='2003-1-1'
+## End Date
+end_date='2022-12-31'
+
+# Get data
+df=wb.DataReader(stock_code,start=start_date,end=end_date)
+
 #                      
 class Dataset(Dataset):
     def __init__(self, flag, seq_len, pred_len):
